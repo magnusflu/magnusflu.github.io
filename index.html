@@ -1,0 +1,683 @@
+<html>
+  <head>
+    <title>Melkespill</title>
+    <link rel="icon" href="bilder/kubilde.png" />
+    <style>
+      * {
+        font-family: sans-serif;
+      }
+      .grid-ramme {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        grid-template-rows: 500px;
+        background-color: rgb(255, 255, 255);
+      }
+      .grid-item {
+        margin: 0px;
+        border: solid rgb(255, 255, 255);
+      }
+      .grid-item-melk {
+        grid-column: 1/5;
+        grid-row: 1/3;
+        background-image: url(./bilder/melk-background.jpeg);
+        background-size: cover;
+      }
+      .scoreboard {
+        margin: 10px;
+        font-size: 30px;
+        padding: 10px;
+        color: white;
+        border: solid;
+        border-color: white;
+        border-radius: 20px;
+        background-color: rgba(0, 0, 0, 0.204);
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+          1px 1px 0 #000;
+      }
+      .scoreboard p1 {
+        font-size: 40px;
+      }
+      .scoreboard p2 {
+        font-size: 20px;
+      }
+
+      .grid-item-stats {
+        grid-column: 10/13;
+        grid-row: 2/3;
+        background-image: url(./bilder/melk-background\ copy.jpg);
+        background-size: contain;
+        color: white;
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+          1px 1px 0 #000;
+        /* Text shadow over er for å få en sort linje rundt skrifen, og bli brukt gjennom hele koden */
+      }
+      .grid-item-stats h2 {
+        border: solid;
+        border-color: white;
+        border-radius: 20px;
+        background-color: rgba(0, 0, 0, 0.263);
+        margin: 10px;
+        padding: 10px;
+      }
+      .stat-ramme {
+        border: solid;
+        border-color: white;
+        border-radius: 20px;
+        background-color: rgba(0, 0, 0, 0.228);
+        margin: 10px;
+        padding: 10px;
+      }
+      .grid-item-illustrasjon {
+        grid-column: 5/10;
+        grid-row: 1/3;
+      }
+      .plen {
+        width: 100%;
+        height: 100%;
+        background-image: url(./bilder/farm-background.jpeg);
+        background-size: cover;
+        background-position: center;
+      }
+      /* marquee for å vå bildet til å "sprette rundt som en DVD screen-saver" */
+      marquee {
+        height: 100vh;
+      }
+      .grid-item-upgrades {
+        background-image: url(./bilder/melk-background.jpeg);
+        background-size: cover;
+        grid-column: 10/13;
+        grid-row: 1/2;
+      }
+      .melkebutikken {
+        margin: 10px;
+        margin-bottom: 50px;
+        padding: 20px;
+        font-size: 30px;
+        color: white;
+        border: solid;
+        border-color: white;
+        border-radius: 20px;
+        background-color: rgba(0, 0, 0, 0.204);
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+          1px 1px 0 #000;
+      }
+      .upgradeKnapp {
+        margin-top: 10px;
+        background-color: rgba(0, 0, 0, 0.262);
+        border: solid;
+        border-radius: 10px;
+        border-color: white;
+        transition: all 0.1s ease-in-out;
+        width: 100%;
+      }
+      .upgradeKnapp:hover {
+        background-color: rgba(0, 0, 0, 0.447);
+        transition: all 0.1s ease-in-out;
+        cursor: pointer;
+      }
+      .upgradeKnapp #image {
+        width: 25%;
+      }
+      .upgradeKnapp img {
+        height: 50px;
+        width: 60px;
+      }
+      .upgradeKnapp #navnOgPris p {
+        color: white;
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+          1px 1px 0 #000;
+        margin: 5px;
+        width: 80%;
+      }
+      /* First of type for å kun endre første p element */
+      .upgradeKnapp #navnOgPris p:first-of-type {
+        font-size: 20px;
+        color: white;
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+          1px 1px 0 #000;
+      }
+      .upgradeKnapp #antall {
+        font-size: 48px;
+        width: 15%;
+        color: white;
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+          1px 1px 0 #000;
+      }
+      #melkbilde {
+        position: relative;
+        width: 250px;
+        height: 500px;
+        margin-top: 70px;
+      }
+      #melkbilde:hover {
+        transform: scale(1.05);
+        transition: 0.1s;
+        cursor: pointer;
+      }
+      #melkbilde:active {
+        transform: scale(0.95);
+        transition: 0.5s;
+      }
+
+      .popup {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+      }
+
+      .popup-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        flex-direction: column;
+      }
+
+      .popup img {
+        max-width: 70%;
+        max-height: 70%;
+      }
+      .popup form {
+        border: solid;
+        border-width: 5px;
+        border-radius: 20px;
+        border-color: rgb(114, 56, 17);
+        background-color: rgb(180, 153, 105);
+        padding: 20px;
+        margin-top: 20px;
+      }
+      #cookieBilde {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .liten-cookie {
+        width: 100px;
+      }
+
+      .stor-cookie {
+        width: 200px;
+      }
+      .cookieButton {
+        color: rgb(255, 255, 255);
+        padding: 10px;
+        background-color: rgba(0, 0, 0, 0.265);
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+          1px 1px 0 #000;
+        border-radius: 10px;
+        border: solid;
+        border-color: aliceblue;
+      }
+      .cookieButton:hover {
+        background-color: rgba(0, 0, 0, 0.447);
+        transition: all 0.1s ease-in-out;
+        cursor: pointer;
+      }
+      .cookieLagerSted {
+        padding: 20px;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.178);
+        border: solid;
+        border-color: aliceblue;
+        border-radius: 20px;
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+          1px 1px 0 #000;
+        color: aliceblue;
+      }
+      @media screen and (max-width: 600px) {
+        /* når bredden bli mindre enn 600px endres strukturen slik at også mibil brukere kan bruke spillet*/
+        .grid-ramme {
+          grid-template-columns: 1fr;
+          grid-template-rows: auto;
+        }
+
+        /* Grid Items */
+        .grid-item {
+          border: none;
+        }
+
+        .grid-item-melk,
+        .grid-item-illustrasjon,
+        .grid-item-stats,
+        .grid-item-upgrades {
+          grid-column: 1/2;
+          grid-row: auto;
+          margin: 0;
+          padding: 0;
+        }
+
+        /* Scoreboard */
+        .scoreboard {
+          font-size: 20px;
+          padding: 5px;
+        }
+
+        .scoreboard p1 {
+          font-size: 30px;
+        }
+
+        .scoreboard p2 {
+          font-size: 15px;
+        }
+
+        /* Stats */
+        .grid-item-stats h2 {
+          margin: 5px;
+          padding: 5px;
+          font-size: 18px;
+        }
+
+        .stat-ramme {
+          margin: 5px;
+          padding: 5px;
+        }
+
+        /* Melkebutikken */
+        .melkebutikken {
+          margin: 5px;
+          margin-bottom: 20px;
+          padding: 10px;
+          font-size: 20px;
+        }
+
+        .upgradeKnapp {
+          margin-top: 5px;
+          font-size: 14px;
+        }
+
+        .upgradeKnapp img {
+          height: 30px;
+          width: 36px;
+        }
+
+        .upgradeKnapp #navnOgPris p {
+          margin: 2px;
+          width: 70%;
+        }
+
+        .upgradeKnapp #navnOgPris p:first-of-type {
+          font-size: 12px;
+        }
+
+        .upgradeKnapp #antall {
+          font-size: 24px;
+          width: 10%;
+        }
+
+        #melkbilde {
+          width: 150px;
+          height: 300px;
+          margin-top: 35px;
+        }
+
+        /* Popup */
+        .popup form {
+          padding: 10px;
+          margin-top: 10px;
+        }
+
+        /* Cookies */
+        .cookieButton {
+          padding: 5px;
+          font-size: 14px;
+        }
+
+        .cookieLagerSted {
+          padding: 10px;
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Lager en popup som gir instrukser til hvordan spillet skal spilles -->
+    <popup id="popup" class="popup">
+      <div class="popup-content">
+        <img src="./bilder/melke-tutorial1.png" alt="Tutorial Image" />
+        <!-- Spør om navn og etternavn og lagrer det for å bruke det på navnet til gården -->
+        <form id="nameForm">
+          <label for="firstName">Fornavn:</label>
+          <input type="text" id="firstName" required />
+
+          <label for="lastName">Etternavn:</label>
+          <input type="text" id="lastName" required />
+
+          <button type="submit">Send</button>
+        </form>
+      </div>
+    </popup>
+    <!--starter med et "klikkevindu der kartongen vi kan klikke på for å tjene melk, og oversikt over saldo er"-->
+    <div class="grid-ramme">
+      <!-- Lager en klikkevindu der vi kan klikke på for å samle melk og viser informasjon om score -->
+      <klikkeVindu class="grid-item grid-item-melk">
+        <center>
+          <div class="scoreboard">
+            <!-- Viser brukernavnet -->
+            <p3 id="userName"></p3><br />
+            <!-- Viser antall melk samlet -->
+            <p1><span id="melk">0</span> 🥛 <br /></p1>
+            <!-- Viser melk per sekund -->
+            <p2><span id="totalps">0</span> 🥛 per sekund</p2>
+          </div>
+          <!-- Viser bilde av melkekartongen og utfører addToScore(klikkPower) funksjonen ved klikk -->
+          <img
+            src="./bilder/tinemelk.png"
+            id="melkbilde"
+            onclick="addToScore(klikkPower)"
+          />
+        </center>
+      </klikkeVindu>
+
+      <upgradeVindu class="grid-item grid-item-upgrades">
+        <center>
+          <p class="melkebutikken">Melkebutikken 🥛<br /></p>
+          <!-- dette er området helt til høyre på nettsiden, her kan brukren kjøpe oppgraderinger -->
+          <table class="upgradeKnapp" onclick="upgradeKlikk()">
+            <tr>
+              <td id="image"><img src="./bilder/klikkUpgrade.jpeg" /></td>
+              <td id="navnOgPris">
+                <p>Klikk-power</p>
+                <p><span id="klikkPris">25</span> 🥛</p>
+              </td>
+              <td id="antall"><span id="klikkStats"></span></td>
+            </tr>
+            <!-- lager en liste ig bruker css til å gjøre det til en "knapp" -->
+          </table>
+
+          <!-- samme kode som over, men med andre verdier -->
+          <table class="upgradeKnapp" onclick="kjøpKuer()">
+            <tr>
+              <td id="image"><img src="./bilder/kubilde.png" /></td>
+              <td id="navnOgPris">
+                <p>Kuer</p>
+                <p><span id="kuPris">15</span> 🥛</p>
+              </td>
+              <td id="antall"><span id="kuer"></span></td>
+            </tr>
+          </table>
+
+          <table class="upgradeKnapp" onclick="kjøpBonder()">
+            <tr>
+              <td id="image"><img src="./bilder/bonderbilde.png" /></td>
+              <td id="navnOgPris">
+                <p>Bønder</p>
+                <p><span id="bondePris">100</span> 🥛</p>
+              </td>
+              <td id="antall"><span id="bonder"></span></td>
+            </tr>
+          </table>
+
+          <table class="upgradeKnapp" onclick="kjøpHelligKu()">
+            <tr>
+              <td id="image"><img src="./bilder/helligKubilde.png" /></td>
+              <td id="navnOgPris">
+                <p>Hellige kuer</p>
+                <p><span id="helligKuPris">1000</span> 🥛</p>
+              </td>
+              <td id="antall"><span id="helligeKuer"></span></td>
+            </tr>
+          </table>
+        </center>
+      </upgradeVindu>
+
+      <!-- Dette er koden for området under melkebutikken (oppgraderingene) her får brukeren fremstilt statestikk -->
+      <statsVindu class="grid-item grid-item-stats">
+        <h2>Stats:</h2>
+        <div class="stat-ramme">
+          <p>Klikkekraft er: <span id="klikkPower">1</span></p>
+          <p>Kuer per sekund: <span id="kuerps">0</span></p>
+          <p>Bønder per sekund: <span id="bonderps">0</span></p>
+          <p>Hellige kuer per sekund: <span id="helligeKuerps">0</span></p>
+        </div>
+      </statsVindu>
+
+      <!-- Dette er det midterste området. -->
+      <cookieVindu class="grid-item grid-item-illustrasjon">
+        <div class="plen">
+          <div class="cookieLagerSted">
+            <!-- vi lager en form og lar brukeren elge størrelse og topping på cookien de kjøper -->
+            <form>
+              <label for="topping">Velg topping: </label>
+              <select id="topping" name="topping">
+                <option value="Sjokolade">Sjokolade</option>
+                <option value="hvitSjokolade">Hvit sjokolade</option>
+                <option value="rosiner">Rosiner</option>
+                <option value="ingenTopping" selected>Ingen topping</option>
+              </select>
+
+              <br />
+
+              <label for="cookieSize">Velg størrelse: </label>
+              <input
+                type="range"
+                id="cookieSize"
+                name="cookieSize"
+                min="1"
+                max="10"
+                value="5"
+              />
+              <!-- Submit button som når trykket på starter funksjonen som viser bildet av kjeksen brukeren vealgte -->
+              <input
+                class="cookieButton"
+                type="button"
+                value="Lag cookie (1000 🥛)"
+                onclick="checkToppingAndSize()"
+              />
+            </form>
+          </div>
+          <!-- Her har vi marquee som beveger seg rundt i rammen-->
+          <marquee behavior="alternate" scrollamount="15">
+            <marquee behavior="alternate" scrollamount="10" direction="down">
+              <img src="./bilder/kubilde.png" id="cookieBilde" />
+            </marquee>
+          </marquee>
+        </div>
+      </cookieVindu>
+    </div>
+    <script>
+      var melk = 0;
+
+      var klikkPower = 1;
+      var klikkPris = 25;
+      var klikkStats = 0;
+
+      var kuPris = 15;
+      var kuer = 0;
+      var kuerps = 0;
+
+      var bondePris = 100;
+      var bonder = 0;
+      var bonderps = 0;
+
+      var helligKuPris = 1000;
+      var helligeKuer = 0;
+      var helligeKuerps = 0;
+
+      var cookiePris = 1000;
+      var cookies = 0;
+
+      var totalps = 0;
+      //definerer noen startverdier
+
+      function addToScore(amount) {
+        melk = melk + amount;
+        document.getElementById("melk").innerHTML = melk;
+      }
+      //en funkjson som plusser sammen scoren vår og setter resultater etter "melk:"
+
+      function upgradeKlikk() {
+        //funkjson for å oppgradere klikk (mer melk per klikk)
+        if (melk >= klikkPris) {
+          //om brukeren har mer melk enn prisen, utføres funkjsonen.
+          melk = melk - klikkPris; //tar bort pengene brukeren bruker opp.
+          klikkPris = Math.round(klikkPris * 1.25); //gjør prisen dyrere.
+
+          if (klikkStats === 9) {
+            //når brukeren har oppgradert for 10ende gang, bytter melken til vaniljemelk og blir dobbelt så effektiv.
+            klikkPower = klikkPower * 2;
+            document.getElementById("melkbilde").src =
+              "./bilder/vaniljemelk.png";
+          } else if (klikkStats === 19) {
+            //samme skjer etter 20
+            klikkPower = klikkPower * 2;
+            document.getElementById("melkbilde").src = "./bilder/sjokomelk.png";
+          } else {
+            //ellers blir klikk effekten +2
+            klikkPower = klikkPower + 2;
+          }
+          klikkStats++;
+
+          document.getElementById("melk").innerHTML = melk;
+          document.getElementById("klikkPris").innerHTML = klikkPris;
+          document.getElementById("klikkPower").innerHTML = klikkPower;
+          document.getElementById("klikkStats").innerHTML = klikkStats;
+        } //henter alle verdiene vi har fått og setter de inn for brukeren til å se
+      }
+      function kjøpKuer() {
+        //funksjon for å kjøpe en ku (automatisk penger)
+        if (melk >= kuPris) {
+          //samme som over
+          melk = melk - kuPris;
+          kuer = kuer + 1; //brukeren får en ku, som nederst i koden har en verdi per sekund.
+          kuPris = Math.round(kuPris * 1.15);
+          kuerps = kuer * 1; // får info til hvor mye melk per sekund kuene bidrar med
+          totalps = totalps + 1; //info om hvor mye total melk ps som blir produsert.
+
+          document.getElementById("melk").innerHTML = melk;
+          document.getElementById("kuPris").innerHTML = kuPris;
+          document.getElementById("kuer").innerHTML = kuer;
+          document.getElementById("kuerps").innerHTML = kuerps;
+          document.getElementById("totalps").innerHTML = totalps;
+        }
+      }
+      //funkjsonen over er hva som skal skje når vi trykker på "kjøp kuer" knappen. Hvis brukeren har mer "melk" enn kuen koster, kan hen kjøpe.
+      //antall kuer går så opp med en og prisen for neste ku vil koste 1.25x mer enn forrige.
+
+      function kjøpBonder() {
+        if (melk >= bondePris) {
+          melk = melk - bondePris;
+          bonder = bonder + 1;
+          bondePris = Math.round(bondePris * 1.15);
+          bonderps = bonder * 6;
+          totalps = totalps + 6;
+
+          document.getElementById("melk").innerHTML = melk;
+          document.getElementById("bondePris").innerHTML = bondePris;
+          document.getElementById("bonder").innerHTML = bonder;
+          document.getElementById("bonderps").innerHTML = bonderps;
+          document.getElementById("totalps").innerHTML = totalps;
+        }
+      }
+
+      function kjøpHelligKu() {
+        if (melk >= helligKuPris) {
+          melk = melk - helligKuPris;
+          helligeKuer = helligeKuer + 1;
+          helligKuPris = Math.round(helligKuPris * 1.15);
+          helligeKuerps = helligeKuer * 50;
+          totalps = totalps + 50;
+
+          document.getElementById("melk").innerHTML = melk;
+          document.getElementById("helligKuPris").innerHTML = helligKuPris;
+          document.getElementById("helligeKuer").innerHTML = helligeKuer;
+          document.getElementById("helligeKuerps").innerHTML = helligeKuerps;
+          document.getElementById("totalps").innerHTML = totalps;
+        }
+      }
+      //indeksert variabel for å definere de ulike mulige bildene som kan vises når brukeren kjøper "cookie"
+      //hadde vi gjort dette uten indekserte variabler måtte vi hatt en rekke if og else rekker, så denne veien er mer effektiv
+      var toppingOptions = [
+        {
+          topping: "Sjokolade",
+          liten: "./bilder/sjokoCookie.png",
+          stor: "./bilder/sjokoCookie.png",
+        },
+        {
+          topping: "hvitSjokolade",
+          liten: "./bilder/hvitCookie.png",
+          stor: "./bilder/hvitCookie.png",
+        },
+        {
+          topping: "rosiner",
+          liten: "./bilder/rosinCookie.png",
+          stor: "./bilder/rosinCookie.png",
+        },
+        {
+          topping: "ingenTopping",
+          liten: "./bilder/plainCookie.png",
+          stor: "./bilder/plainCookie.png",
+        },
+      ];
+
+      function checkToppingAndSize() {
+        //
+        if (melk >= cookiePris) {
+          melk = melk - cookiePris;
+
+          var selectedToppingIndex =
+            document.getElementById("topping").selectedIndex; // Henter indeksen til det valgte topping-elementet fra "topping"
+          var cookieSize = document.getElementById("cookieSize").value; // Henter verdien til input-element med id "cookieSize"
+
+          var cookieBilde = document.querySelector("#cookieBilde"); // Henter referansen til bildet
+          cookieBilde.classList.remove("liten-cookie", "stor-cookie"); // Fjerner CSS-klassene
+
+          var selectedTopping = toppingOptions[selectedToppingIndex]; // Henter det valgte topping-alternativet
+          var imagePath =
+            cookieSize > 5 ? selectedTopping.stor : selectedTopping.liten; // Velger riktig bildebane basert på størrelsen på cookien og den valgte toppingen
+          cookieBilde.src = imagePath; // Setter bildekilden (src) til riktig bildebane
+          cookieBilde.className =
+            "cookieBilde " + (cookieSize > 5 ? "stor-cookie" : "liten-cookie"); // Setter CSS-klasse. Hvis cookien er stor, blir klassen "stor-cookie", ellers blir den "liten-cookie"
+        }
+      }
+
+      setInterval(function () {
+        //setter en funksjon som utføres x ofte
+        melk = melk + kuer; //kuer har verdien av en melk, så en ku gir en melk i sekundet
+        melk = melk + bonder * 6; //bønder har verdien 6, så 1 bonde gir 6 melk ps
+        melk = melk + helligeKuer * 50; //hellige kuer gir 50 melk ps per hellige ku
+        document.getElementById("melk").innerHTML = melk; //setter summen av disse til den totale melken
+
+        document.title = melk + " || Melke-klikker"; //antall melk vises øverst i vinduet ved search-baren i nettleseren.
+      }, 1000);
+      //vi lager en funksjon slik at kuer har en påvirkning på scoren. Vi setter en interval som gjør at vi får +1 melk (eller 5) for hver ku hvert sekund.
+
+      window.onload = function () {
+        //når siden lastes utføres funksjonen som viser "tutorial" bildet og skjema til brukeren.
+        var popup = document.getElementById("popup");
+
+        // Viser pop-up-vinduet når siden lastes
+        popup.style.display = "block";
+
+        // Lukker pop-up-vinduet når brukeren klikker på det
+      };
+
+      var nameForm = document.getElementById("nameForm");
+
+      nameForm.onsubmit = function (event) {
+        event.preventDefault(); // Forhindrer tomt skjema-innsending
+
+        // Henter verdien fra skjemaet
+        var firstName = document.getElementById("firstName").value;
+        var lastName = document.getElementById("lastName").value;
+
+        // Sjekker om navnene er fylt ut
+        if (firstName && lastName) {
+          console.log("Navn:", firstName, lastName);
+          // navnet blir lagret og skrevet ut i console loggen
+
+          // Oppdaterer brukernavn i scoreboard
+          var h1Element = document.getElementById("userName");
+          h1Element.textContent = firstName + " " + lastName + " sin gård";
+
+          // Lukker pop-up-vinduet
+          popup.style.display = "none";
+        }
+      };
+    </script>
+  </body>
+</html>
